@@ -1,0 +1,176 @@
+4) Design and implement Client Server communication using socket programming (Client
+requests a file, Server responds to client with contents of that file which is then display on
+the screen by Client).
+Client.java
+import java.net.*;
+import java.io.*;
+public class Client {
+public static void main(String[] args) {
+Socket client = null;
+BufferedReader br = null;
+try {
+System.out.println(args[0] + " " + args[1]);
+client = new Socket(args[0],Integer.parseInt(args[1]));
+} catch (Exception e){}
+DataInputStream input = null;
+PrintStream output = null;
+try {
+input = new DataInputStream(client.getInputStream());
+output = new PrintStream(client.getOutputStream());
+br = new BufferedReader(new InputStreamReader(System.in));
+String str = input.readLine(); //get the prompt from the server
+System.out.println(str);
+String filename = br.readLine();
+if (filename!=null){
+output.println(filename);
+}
+String data;
+while ((data=input.readLine())!=null) {
+System.out.println(data);
+}
+client.close();
+} catch (Exception e){
+System.out.println(e);
+}
+}
+}
+Server.java
+import java.net.*;
+import java.io.*;
+public class Server {
+public static void main(String[] args) {
+ServerSocket server = null;
+try {
+server = new ServerSocket(Integer.parseInt(args[0]));
+} catch (Exception e) {
+}
+while (true) {
+Socket client = null;
+PrintStream output = null;
+DataInputStream input = null;
+try {
+client = server.accept();
+} catch (Exception e) {
+System.out.println(e);
+}
+try {
+output = new PrintStream(client.getOutputStream());
+input = new DataInputStream(client.getInputStream());
+} catch (Exception e) {
+System.out.println(e);
+}
+//Send the command prompt to client
+output.println("Enter the filename :>");
+try {
+//get the filename from client
+String filename = input.readLine();
+System.out.println("Client requested file :" + filename);
+try {
+File f = new File(filename);
+BufferedReader br = new BufferedReader(new FileReader(f));
+String data;
+while ((data = br.readLine()) != null) {
+output.println(data);
+}
+} catch (FileNotFoundException e) {
+output.println("File not found");
+}
+client.close();
+} catch (Exception e) {
+System.out.println(e);
+}
+}
+}
+}
+
+5) Implement a JAVA Servlet Program to implement a dynamic HTML using Servlet (user
+name and password should be accepted using HTML and displayed using a Servlet).
+Create a new servlet named Servlet9 in the project (as shown in the steps above from Page 37)
+and then type the following code in it
+Servlet9.java
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+@WebServlet("/Servlet9")
+publicclass Servlet9 extends HttpServlet {
+protectedvoid doPost(HttpServletRequest request, HttpServletResponse response) throws
+ServletException, IOException {
+response.setContentType("text/html");
+PrintWriter out = response.getWriter();
+String str = request.getParameter("uname");
+String str1 = request.getParameter("pname");
+out.println("<html>");
+out.println("<body>");
+out.println("Username is :" + str + "<br/>");
+out.println("Password is :" + str1);
+out.println("</body>");
+out.println("</html>"); }
+}
+Under WebContent, create a new html file, Program9.html
+<html>
+<head>
+<title>Program 9</title>
+</head>
+<body bgcolor=orange>
+<form method="post" name="form1"
+action="http://localhost:8080/ProjectName/ServletClassName">
+<center>
+<b><br/><br/>
+Enter Username : <input type="text" name="uname" size="10"/>
+<br/>
+Enter Password : <input type="password" name="pname" size="10"/>
+<br/><br/>
+<input type="button" value="Submit" onclick="submit()"/>
+</center>
+<script type="text/javascript">
+function validate(){
+if(document.form1.uname.value =="" || document.from1.pname.value ==""){
+alert("Fields cannot be blank");
+return;
+}
+}
+</script>
+</form>
+</body>
+</html>
+In the above html file, replace ProjectName and ServletClassName with your respective project and
+filename
+
+
+6. Implement JDBC Application Program Using MySQL/ORACLE connectivity, by
+developing a program to accept book information such as Book-ID, Title, Authors, Edition
+and Publisher from the table already stored in the database, to perform the following
+transactions.
+1. Display of Table Contents.
+2. Insertion of Values to the Table.
+3. Update and Delete contents as and when required
+import java.sql.*;
+class prg{
+public static void main(String args[]){
+try{
+Class.forName("oracle.jdbc.driver.OracleDriver");
+Connection
+con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","javanetwork","tiger"
+);
+Statement stmt=con.createStatement();
+//String sql1=("insert into Books values(12,'Java Programming','Herbert',9,'TMH')");
+//String sql2=("update Books set edition=9 where Bid=1432");
+String sql3=("Delete from Books where Bid=12345");
+String sql=("select * from Books");
+//ResultSet rs2=stmt.executeQuery(sql1);
+//ResultSet rs3=stmt.executeQuery(sql2);
+ResultSet rs4=stmt.executeQuery(sql3);
+ResultSet rs=stmt.executeQuery(sql);
+while(rs.next())
+{
+System.out.println(rs.getInt(1)+ " " +rs.getString(2)+" "+rs.getString(3)+" "+rs.getInt(4)+"
+"+rs.getString(5) );
+}
+con.close();
+}catch(Exception e)
+{
+System.out.println(e);
+}
+}
+}
